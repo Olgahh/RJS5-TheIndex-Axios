@@ -1,26 +1,26 @@
 import React, { Component } from "react";
 import axios from "axios";
 
-// import authors from "./data.js";
-
 // Components
 import Sidebar from "./Sidebar";
 import AuthorList from "./AuthorList";
 import AuthorDetail from "./AuthorDetail";
+import Loading from "./Loading";
 
 class App extends Component {
   state = {
     currentAuthor: null,
-    authors: []
+    authors: [],
+    loading: true
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     try {
-      let response = axios.get(
+      let response = await axios.get(
         "https://the-index-api.herokuapp.com/api/authors/"
       );
       let authors = response.data;
-      this.setState({ authors: authors });
+      this.setState({ authors: authors, loading: false });
       console.log(authors);
     } catch (errors) {
       console.log(errors);
@@ -32,7 +32,9 @@ class App extends Component {
   unselectAuthor = () => this.setState({ currentAuthor: null });
 
   getContentView = () => {
-    if (this.state.currentAuthor) {
+    if (this.state.loading) {
+      return <Loading />;
+    } else if (this.state.currentAuthor) {
       return <AuthorDetail author={this.state.currentAuthor} />;
     } else {
       return (
