@@ -2,7 +2,6 @@ import React from "react";
 
 const BookRow = props => {
   const book = props.book;
-
   return (
     <tr>
       <td>{book.title}</td>
