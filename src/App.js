@@ -16,28 +16,44 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      let response = await axios.get(
-        "https://the-index-api.herokuapp.com/api/authors/"
+      const response = await axios.get(
+        `https://the-index-api.herokuapp.com/api/authors/`
       );
-      let authors = response.data;
-      this.setState({ authors: authors, loading: false });
-      console.log(authors);
+      const authors = response.data;
+      this.setState({ authors, loading: false });
     } catch (errors) {
       console.log(errors);
     }
   }
 
-  selectAuthor = author => this.setState({ currentAuthor: author });
+  selectAuthor = async author => {
+    this.setState({ loading: true });
+
+    try {
+      let response = await axios.get(
+        `https://the-index-api.herokuapp.com/api/authors/${author.id}/`
+      );
+      this.setState({ currentAuthor: response.data, loading: false });
+    } catch (errors) {
+      console.log(errors);
+    }
+  };
 
   unselectAuthor = () => this.setState({ currentAuthor: null });
 
   getContentView = () => {
-    if (this.state.loading) {
-      return <Loading />;
-    } else if (this.state.currentAuthor) {
-      return <AuthorDetail author={this.state.currentAuthor} />;
+    // if (this.state.loading) {
+    //   return <Loading />;
+    if (this.state.currentAuthor) {
+      return this.state.loading ? (
+        <Loading />
+      ) : (
+        <AuthorDetail author={this.state.currentAuthor} />
+      );
     } else {
-      return (
+      return this.state.loading ? (
+        <Loading />
+      ) : (
         <AuthorList
           authors={this.state.authors}
           selectAuthor={this.selectAuthor}
